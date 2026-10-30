@@ -12,18 +12,15 @@ def index_department(root:Path, department:str)->dict:
 
     for file_path in iter_department_files(root, department):
 
-        #important to identify the document uniquely and when updeting the document in the vector store, we can use the file path and name to generate a unique ID for the document
+       
         source=f"{department}/{Path.name}" 
 
         if collection.count():
-            # delete the doc from vector when the document is updated or re-indexed, we can use the unique ID to delete the old version of the document from the vector store before adding the new version
             #source= hr/leave_policy.txt
             collection.delete(where={"source": source})
 
         documents, metadata, ids= [], [], [] 
 
-        #versioning the document, we can use the file path and name to generate a unique ID for the document, which can be used to track changes to the document over time and ensure that the correct version of the document is being used for retrieval
-        #how to do this
         for page in load_document(Path):
             for chunk_idx, chunk in enumerate(chunk_text(page["text"])):
                 uid=sha256(f"{source}:{page['page']}:{chunk_idx}".encode()).hexdigest()
