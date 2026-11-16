@@ -1,18 +1,13 @@
-"""Create embeddings for chunks. Placeholder - implemented in Module 8."""
+"""One shared embedding model for all policy departments."""
 from functools import lru_cache
-from app. core.config import get_settings
+from app.core.config import get_settings
 
-@lru_cache(maxsize=1) 
+@lru_cache(maxsize=1)
 def get_embedding_model():
     from sentence_transformers import SentenceTransformer
+    return SentenceTransformer(get_settings().rag_embedding_model)
 
-    model_name = get_settings().rag.embedding_model_name
-    return SentenceTransformer(model_name)
-
-def embed_text(text: list[str]) -> list[list[float]]:
-
+def embed_texts(texts: list[str]) -> list[list[float]]:
     model = get_embedding_model()
-    vector=model.encode(text,normalize_embeddings=True) 
-   
-
-    return vector.tolist()
+    vectors = model.encode(texts, normalize_embeddings=True)
+    return vectors.tolist()
